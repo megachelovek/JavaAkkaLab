@@ -10,14 +10,13 @@ public class Worker extends UntypedActor {
     final static int LIMIT = 1000;
     int[] primes = new int[LIMIT];
 
-    int numPrimes = 1,i, candidate, isprime;
-
     @Override
     public void onReceive(Object message) {
         primes[0] = 2;
         primes[1] = 3;
         if (message instanceof Work) {
-            int prime;
+            Work work = (Work) message;
+            int prime = work.getPrime();
             Boolean isPrime = new Primes().checkIsPrime(primes, prime);
             getSender().tell( isPrime , getSelf());
         } else
