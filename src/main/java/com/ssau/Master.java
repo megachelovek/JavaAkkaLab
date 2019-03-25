@@ -23,6 +23,8 @@ public class Master extends UntypedActor {
 
     public Master() {
         workerRouter = this.getContext().actorOf(Worker.createWorker().withRouter(new RoundRobinPool(Main.CountOfWorkers)), "workerRouter");
+        list.add(2);
+        list.add(3);
     }
 
     @Override
@@ -43,8 +45,8 @@ public class Master extends UntypedActor {
 
     private void processMessages() {
         for (int i = 0; i < countOfPrimes; i++) {
-            int[] currentArray = list.toArray();
-            workerRouter.tell(new Work(i,), getSelf());
+            int[] currentArray = list.stream().mapToInt(j->j).toArray();
+            workerRouter.tell(new Work(i,currentArray), getSelf());
             System.out.println("work send" );
         }
     }
