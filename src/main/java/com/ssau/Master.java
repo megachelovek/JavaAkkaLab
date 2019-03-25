@@ -11,26 +11,30 @@ import akka.routing.*;
 import scala.collection.mutable.ArraySeq;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Master extends UntypedActor {
 
-    private long messages = 10;
     private ActorRef workerRouter;
     private final Time time = new Time();
-    private ArrayList list = new ArrayList();
+    private List<Integer> list = new ArrayList<Integer>();
+    private int countOfWorkers;
+    private int countOfPrimes;
 
     public Master() {
-        workerRouter = this.getContext().actorOf(Worker.createWorker().withRouter(new RoundRobinPool(8)), "workerRouter");
+        workerRouter = this.getContext().actorOf(Worker.createWorker().withRouter(new RoundRobinPool(Main.CountOfWorkers)), "workerRouter");
     }
 
     @Override
     public void onReceive(Object message) {
         if (message instanceof Calculate) {
+            countOfWorkers = ((Calculate) message).getCountOfWorkers();
+            countOfPrimes = ((Calculate) message).getCountOfPrimes();
             time.start();
             processMessages();
         } else if (message instanceof Result) {
-            list.add(((Result) message).getIsPrime());
-            if (list.size() == messages)
+            if(((Result) message).getIsPrime() == true){list.add(((Result) message).getPrime());}
+            if (list.size() == countOfPrimes)
                 end();
         } else {
             unhandled(message);
@@ -38,15 +42,17 @@ public class Master extends UntypedActor {
     }
 
     private void processMessages() {
-        for (int i = 3; i < messages+3; i++) {
-            workerRouter.tell(new Work(i,new int[]{2,3}), getSelf());
+        for (int i = 0; i < countOfPrimes; i++) {
+            int[] currentArray = list.toArray();
+            workerRouter.tell(new Work(i,), getSelf());
+            System.out.println("work send" );
         }
     }
 
     private void end() {
         time.end();
         System.out.println("Done: " + time.elapsedTimeMilliseconds());
-        for(int i=3; i<list.size()+3;i++){
+        for(int i=0; i<list.size();i++){
             System.out.println("Result "+i +" = "+ list.get(i).toString() );
         }
         getContext().system().terminate();
