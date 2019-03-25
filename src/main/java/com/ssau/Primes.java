@@ -8,8 +8,13 @@ public class Primes {
         Boolean isPrime = true;
         int i=0;
         while (primes[i] * primes[i]<= prime){
-            if (prime%primes[i]==0) {isPrime = false;break;}
-            i++;
+            if (primes[i]!=0) {
+                if (prime % primes[i] == 0) {
+                    isPrime = false;
+                    break;
+                }
+                i++;
+            }
         }
         return isPrime;
     }

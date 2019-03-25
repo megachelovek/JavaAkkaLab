@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class Result {
 
-    private BigInteger bigInt;
+    private Boolean isPrime;
 
-    public Result(BigInteger bigInt) {
-        this.bigInt = bigInt;
+    public Result(Boolean isPrime) {
+        this.isPrime = isPrime;
     }
 
-    public BigInteger getFactorial() {
-        return this.bigInt;
+    public Boolean getIsPrime() {
+        return this.isPrime;
     }
 }

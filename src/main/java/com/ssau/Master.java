@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class Master extends UntypedActor {
 
-    private long messages = 1000;
+    private long messages = 10;
     private ActorRef workerRouter;
     private final Time time = new Time();
     private ArrayList list = new ArrayList();
@@ -29,7 +29,7 @@ public class Master extends UntypedActor {
             time.start();
             processMessages();
         } else if (message instanceof Result) {
-            list.add(((Result) message).getFactorial());
+            list.add(((Result) message).getIsPrime());
             if (list.size() == messages)
                 end();
         } else {
@@ -38,14 +38,17 @@ public class Master extends UntypedActor {
     }
 
     private void processMessages() {
-        for (int i = 0; i < messages; i++) {
-            workerRouter.tell(new Work(), getSelf());
+        for (int i = 3; i < messages+3; i++) {
+            workerRouter.tell(new Work(i,new int[]{2,3}), getSelf());
         }
     }
 
     private void end() {
         time.end();
         System.out.println("Done: " + time.elapsedTimeMilliseconds());
+        for(int i=3; i<list.size()+3;i++){
+            System.out.println("Result "+i +" = "+ list.get(i).toString() );
+        }
         getContext().system().terminate();
     }
 
