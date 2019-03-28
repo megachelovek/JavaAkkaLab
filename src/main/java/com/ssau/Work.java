@@ -8,7 +8,7 @@ public class Work {
 
     public Work(int prime, int[] primes) {
         this.prime = prime;
-        this.primes = primes;
+        this.primes =primes;
     }
 
     public int getPrime() {

@@ -17,6 +17,11 @@ public class Primes {
             }
             if (i == primes.length-1){break;}
         }
+       if (isPrime){addPrimeToList(prime);}
         return isPrime;
+    }
+
+    public synchronized void addPrimeToList(int prime){
+        Master.list.add(prime);
     }
 }

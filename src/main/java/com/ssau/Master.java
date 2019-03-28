@@ -13,13 +13,12 @@ import scala.collection.mutable.ArraySeq;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Master extends UntypedActor {
+public class Master extends UntypedActor{
 
     private ActorRef workerRouter;
     private final Time time = new Time();
-    private List<Integer> list = new ArrayList<Integer>();
-    private int countOfWorkers;
-    private int countOfPrimes;
+    public static List<Integer> list = new ArrayList<Integer>();
+    public static int currentIndex=0;
 
     public Master() {
         workerRouter = this.getContext().actorOf(Worker.createWorker().withRouter(new RoundRobinPool(Main.CountOfWorkers)), "workerRouter");
@@ -30,13 +29,13 @@ public class Master extends UntypedActor {
     @Override
     public void onReceive(Object message) {
         if (message instanceof Calculate) {
-            countOfWorkers = ((Calculate) message).getCountOfWorkers();
-            countOfPrimes = ((Calculate) message).getCountOfPrimes();
             time.start();
             processMessages();
         } else if (message instanceof Result) {
-            if(((Result) message).getIsPrime() == true){list.add(((Result) message).getPrime());}
-            if (list.size() == countOfPrimes)
+            if(((Result) message).getIsPrime() == true){
+                list.add(((Result) message).getPrime());
+            }
+            if (list.size() == Main.CountOfPrimes)
                 end();
         } else {
             unhandled(message);
@@ -44,10 +43,11 @@ public class Master extends UntypedActor {
     }
 
     private void processMessages() {
-        for (int i = 0; i < countOfPrimes; i++) {
-            int[] currentArray = list.stream().mapToInt(j->j).toArray();
-            workerRouter.tell(new Work(i,currentArray), getSelf());
+        while( currentIndex < Main.CountOfPrimes) {
+            int[] currentArray = getListPrimes();
+            workerRouter.tell(new Work(currentIndex,currentArray), getSelf());
             System.out.println("work send" );
+            currentIndex++;
         }
     }
 
@@ -62,5 +62,9 @@ public class Master extends UntypedActor {
 
     public static Props createMaster() {
         return Props.create(Master.class, new ArraySeq<Object>(0));
+    }
+
+    public synchronized int[] getListPrimes() {
+        return list.stream().mapToInt(j->j).toArray();
     }
 }
