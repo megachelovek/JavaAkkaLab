@@ -1,7 +1,5 @@
 package com.ssau;
 
-import scala.concurrent.duration.Duration;
-
 public class Work {
     private final int prime;
     private final int[] primes;

@@ -4,8 +4,6 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import scala.collection.mutable.ArraySeq;
 
-import java.math.BigInteger;
-
 public class Worker extends UntypedActor {
 
     @Override
@@ -18,6 +16,11 @@ public class Worker extends UntypedActor {
             int prime = work.getPrime();
             Boolean isPrime = new Primes().checkIsPrime(primes, prime);
             getSender().tell( new Result(isPrime,prime) , getSelf());
+            if (primes.length >2){
+                if (primes[2]==-1) {
+                    getContext().stop(this.getSelf());
+                }
+        }
         } else
             unhandled(message);
     }
